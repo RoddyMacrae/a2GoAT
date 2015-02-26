@@ -48,6 +48,7 @@ set(GOAT_BASE
    inc/GHistManager.h
    inc/GTreeManager.h
    inc/GConfigFile.h
+   inc/GoatExceptions.h
    src/GTree.cc
    src/GTreeTrack.cc
    src/GTreeDetectorHits.cc
