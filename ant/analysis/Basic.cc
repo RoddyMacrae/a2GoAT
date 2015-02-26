@@ -57,20 +57,17 @@ ant::analysis::Basic::Basic(const mev_t energy_scale)
                 "nTagged"
                 );
 
-    const int max_gammas_im=10;
-    ngammaim.reserve(max_gammas_im);
+    const int max_photons_event = 10;
 
-    for(int i=2;i<=max_gammas_im;++i) {
-
-        ngammaim.push_back(
-                    make_pair(
-                    hf.Make1D( to_string(i) + " #gamma IM",
-                              "M [MeV]",
-                              "#",
-                              energy_bins,
-                               to_string(i)+"_photon_IM")
-                        ,i
-                    ));
+    for( int photons_per_event=2; photons_per_event <= max_photons_event; ++ photons_per_event) {
+        std::map<int, TH1D*>& im_list = nGammaImEvent[photons_per_event];
+        for( int photons_per_IM=2; photons_per_IM <= photons_per_event; ++photons_per_IM) {
+            im_list[photons_per_IM] = hf.Make1D( to_string(photons_per_IM) + " #gamma IM in " + to_string(photons_per_event) + " #gamma events",
+                                                 "M [MeV]",
+                                                 "#",
+                                                 energy_bins,
+                                                 to_string(photons_per_IM)+"_photon_IM_"+to_string(photons_per_event)+"gevnts");
+        }
     }
 
     for( auto& t : ParticleTypeDatabase::DetectableTypes() ) {
@@ -92,15 +89,22 @@ void ant::analysis::Basic::ProcessEvent(const ant::Event &event)
 
     const refRecParticleList_t gammas = event.ParticleType(ParticleTypeDatabase::Photon);
 
-    for( auto& implot : ngammaim ) {
+    auto entry = nGammaImEvent.find(gammas.size());
 
-        for( auto c = makeCombination(gammas, implot.second); !c.Done(); ++c) {
-            TLorentzVector m;
-            for( auto& g : c) {
-                m+= *g;
-            }
-            implot.first->Fill(m.M());
-        };
+    if( entry != nGammaImEvent.end() ) {
+
+        std::map<int, TH1D*>& im_list = entry->second;
+
+        for( auto& im_hist_entry : im_list ) {
+
+            for( auto c = makeCombination(gammas, im_hist_entry.first); !c.Done(); ++c) {
+                TLorentzVector m;
+                for( auto& g : c) {
+                    m+= *g;
+                }
+                im_hist_entry.second->Fill(m.M());
+            };
+        }
     }
 
     for( auto& taggerhit : event.TaggerHits()) {
@@ -127,11 +131,13 @@ void ant::analysis::Basic::ShowResult()
     canvas c("Basic");
     c  << canvas::drawoption("colz") << banana << particles << tagger << ntagged << canvas::cend;
 
-    canvas ngim("Basic - Inv. Masses");
-    for( auto& hist : ngammaim ) {
-        ngim << hist.first;
+    for( auto& list : nGammaImEvent) {
+        canvas c("Basic - Inv. Masses " + to_string(list.first)+" #gamma events");
+        for( auto& hist : list.second ) {
+            c << hist.second;
+        }
+        c << canvas::cend;
     }
-    ngim << canvas::cend;
 
     canvas types("Basic: Particle Types per Event");
     for( auto& t : numParticleType ) {

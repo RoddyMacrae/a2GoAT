@@ -18,9 +18,8 @@ protected:
     TH1D* tagger;
     TH1D* ntagged;
 
-    typedef std::vector<std::pair<TH1D*, int>> Hist1DList;
+    std::map<int, std::map<int, TH1D*>> nGammaImEvent;
 
-    Hist1DList ngammaim;
 
     std::map<const ParticleTypeDatabase::Type*, TH1D*> numParticleType;
 
