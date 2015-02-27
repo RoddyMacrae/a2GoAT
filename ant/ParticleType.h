@@ -47,15 +47,21 @@ public:
         }
     };
 
-
+    typedef std::map<index_t, const Type*> PIDMap_t;
+    typedef std::vector<const Type*> TypeList_t;
 
 protected:
 
     typedef std::map<std::string, const Type&> Particles_t;
     static Particles_t types;
 
-    static const std::vector<const Type*> detectables;
-    static const std::vector<const Type*> mc_finalstate;
+
+
+    static PIDMap_t pluto_pid_map;
+
+    static const TypeList_t detectables;
+    static const TypeList_t mc_finalstate;
+    static const TypeList_t neutral_mesons;
 
 public:
 
@@ -72,9 +78,14 @@ public:
     static const Type PiPlus;
     static const Type PiMinus;
     static const Type PiCharged;
+
     static const Type ePlus;
     static const Type eMinus;
     static const Type eCharged;
+
+    static const Type MuPlus;
+    static const Type MuMinus;
+    static const Type MuCharged;
 
     static const Type Eta;
     static const Type Omega;
@@ -94,8 +105,11 @@ public:
     static const_iterator begin() { return const_iterator(types.begin()); }
     static const_iterator end()   { return const_iterator(types.end()); }
 
-    static const std::vector<const Type*>& DetectableTypes() { return detectables; }
-    static const std::vector<const Type*>& MCFinalStateTypes() { return mc_finalstate; }
+    static const TypeList_t& DetectableTypes() { return detectables; }
+    static const TypeList_t& MCFinalStateTypes() { return mc_finalstate; }
+    static const TypeList_t& NeutralMesons() { return neutral_mesons; }
+
+    static const Type* GetTypeOfPlutoID(index_t pid);
 
 
 };
