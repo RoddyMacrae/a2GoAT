@@ -32,6 +32,8 @@ protected:
 
     TH1D* step_levels;
 
+    TH1D* omega_mc_rec_angle;
+
 public:
     Omega(const mev_t energy_scale=1000.0);
     virtual ~Omega() {}

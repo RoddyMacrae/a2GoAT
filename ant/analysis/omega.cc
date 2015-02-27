@@ -20,6 +20,7 @@ ant::analysis::Omega::Omega(const ant::mev_t energy_scale):
     const HistogramFactory::BinSettings energy_bins(1000, 0.0, energy_scale);
     const HistogramFactory::BinSettings p_MM_bins(1000, 500.0, 1500.0);
     const HistogramFactory::BinSettings angle_bins(200,170.0,190.0);
+    const HistogramFactory::BinSettings angle_diff_bins(200,0.0,20.0);
     HistogramFactory hf("Omega");
 
     eta_IM = hf.Make1D(ParticleTypeDatabase::Eta.PrintName()+" IM",
@@ -68,6 +69,13 @@ ant::analysis::Omega::Omega(const ant::mev_t energy_scale):
                             HistogramFactory::BinSettings(10,0,10)
                             );
     step_levels->SetStats(kFALSE);
+
+    omega_mc_rec_angle = hf.Make1D(ParticleTypeDatabase::Omega.PrintName()+" MC/Rec angle",
+                                   "angle [#circ]",
+                                   "# / " + to_string(angle_diff_bins.BinWidth())+" #circ",
+                                   angle_diff_bins,
+                                   ParticleTypeDatabase::Eta.Name()+"_mc_rec_angle"
+                                   );
 }
 
 template <class InputIterator, class T>
@@ -93,6 +101,15 @@ void ant::analysis::Omega::ProcessEvent(const ant::Event &event)
         return;
 
     step_levels->Fill("1_NPhotons>3",1);
+
+    const MCParticle* mc_omega=nullptr;
+    for( auto& mcp : event.MCTrue() ) {
+        if(mcp->Type() == ParticleTypeDatabase::Omega) {
+            if(mc_omega!=nullptr)
+                throw string("Multiple omegas found in MC True");
+            mc_omega = mcp;
+        }
+    }
 
     unsigned int n_omega_found = 0;
 
@@ -134,6 +151,11 @@ void ant::analysis::Omega::ProcessEvent(const ant::Event &event)
                             p_MM->Fill(p.M());
                         }
                     }
+
+                    if(mc_omega) {
+                        double omega_angles = mc_omega->Angle(omega.Vect()) * TMath::RadToDeg();
+                        omega_mc_rec_angle->Fill(omega_angles);
+                    }
                 }
             }
 
@@ -155,6 +177,8 @@ void ant::analysis::Omega::ProcessEvent(const ant::Event &event)
         }
     }
 
+
+
 }
 
 
@@ -166,7 +190,7 @@ void ant::analysis::Omega::Finish()
 
 void ant::analysis::Omega::ShowResult()
 {
-    canvas("Omega (Reconstructed)") << eta_IM << omega_IM << p_MM << omega_rec_multi << eta_copl << eta_cand_copl << step_levels << canvas::cend;
+    canvas("Omega (Reconstructed)") << eta_IM << omega_IM << p_MM << omega_rec_multi << eta_copl << eta_cand_copl << step_levels <<  omega_mc_rec_angle << canvas::cend;
     canvas("Omega (Not Reconstructed)") << nr_ngamma << nr_2gim << nr_3gim << canvas::cend;
 
 }
