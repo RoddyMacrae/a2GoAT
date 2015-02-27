@@ -34,7 +34,7 @@ const ParticleTypeDatabase::Type ParticleTypeDatabase::MuMinus("MuMinus",       
 
 const ParticleTypeDatabase::Type ParticleTypeDatabase::Eta("Eta",                     "#eta",          547.853, false);
 const ParticleTypeDatabase::Type ParticleTypeDatabase::Omega("Omega",                 "#omega",        782.65, false);
-const ParticleTypeDatabase::Type ParticleTypeDatabase::EtaPrime("EtaPrime",           "#eta^{#prime}", 957.78, false);
+const ParticleTypeDatabase::Type ParticleTypeDatabase::EtaPrime("EtaPrime",           "#eta'",         957.78, false);
 
 ParticleTypeDatabase::Type::Type(const string &_name, const string &_print_name, const mev_t &_mass, const bool &_charged, const ParticleTypeDatabase::Type *_sametype):
     name(_name),
