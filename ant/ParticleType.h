@@ -62,6 +62,7 @@ protected:
     static const TypeList_t detectables;
     static const TypeList_t mc_finalstate;
     static const TypeList_t neutral_mesons;
+    static TypeList_t temp_types;
 
 public:
 
@@ -110,6 +111,8 @@ public:
     static const TypeList_t& NeutralMesons() { return neutral_mesons; }
 
     static const Type* GetTypeOfPlutoID(index_t pid);
+
+    static const Type* AddTempPlutoType(index_t pid, const std::string& _name, const std::string& _print_name, const mev_t& _mass, const bool& _charged, const Type* _sametype=nullptr);
 
 
 };
