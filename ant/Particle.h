@@ -66,18 +66,22 @@ public:
  * This is the same as Particle for the moment. Can be extended as needed.
  */
 class MCParticle: public Particle {
+protected:
+    bool isfinalstate;
 public:
-    MCParticle(const ant::ParticleTypeDatabase::Type& _type, ant::mev_t _Ek, ant::radian_t _theta, ant::radian_t _phi):
-        Particle(_type, _Ek, _theta, _phi )
+    MCParticle(const ant::ParticleTypeDatabase::Type& _type, ant::mev_t _Ek, ant::radian_t _theta, ant::radian_t _phi, bool finalstate=true):
+        Particle(_type, _Ek, _theta, _phi ), isfinalstate(finalstate)
     {}
 
-    MCParticle(const ParticleTypeDatabase::Type& _type, const TLorentzVector& _lorentzvector):
-        Particle(_type, _lorentzvector)
+    MCParticle(const ParticleTypeDatabase::Type& _type, const TLorentzVector& _lorentzvector, bool finalstate=true):
+        Particle(_type, _lorentzvector),isfinalstate(finalstate)
     {}
 
     virtual ~MCParticle() {}
 
     virtual std::ostream& Print(std::ostream& stream) const;
+
+    bool IsFinalState() const { return isfinalstate; }
 };
 
 
