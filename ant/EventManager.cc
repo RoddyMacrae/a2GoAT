@@ -4,6 +4,7 @@
 #include "Rtypes.h"
 #ifdef hasPluto
 #include "PParticle.h"
+#include "PStaticData.h"
 #endif
 
 #include "GTreeTrack.h"
@@ -16,8 +17,11 @@
 using namespace std;
 using namespace ant;
 
-EventManager::EventManager(): maxevents(0)
+EventManager::EventManager(): maxevents(0), pluto_database(nullptr)
 {
+#ifdef hasPluto
+    pluto_database = makeStaticData();
+#endif
 }
 
 EventManager::~EventManager()
@@ -162,13 +166,22 @@ void EventManager::CopyTracks(GTreeTrack *tree, Event::TrackList_t &container)
 #ifdef hasPluto
 void EventManager::CopyPlutoParticles(GTreePluto *tree, Event::MCParticleList_t &container)
 {
-    const GTreePluto::ParticleList particles = tree->GetFinalState();
+    const GTreePluto::ParticleList particles = tree->GetAllParticles();
 
     const ParticleTypeDatabase::Type* type=nullptr;
     for( auto& p : particles ) {
         type = ParticleTypeDatabase::GetTypeOfPlutoID(p->ID());
-        if(!type)
-            continue;
+        if(!type) {
+            type = ParticleTypeDatabase::AddTempPlutoType(
+                        p->ID(),
+                        "Pluto_"+to_string(p->ID()),
+                        "Pluto_"+ string( pluto_database->GetParticleName(p->ID()) ),
+                        pluto_database->GetParticleMass(p->ID())*1000.0,
+                        abs(pluto_database->GetParticleCharge(p->ID()))
+                        );
+            if(!type)
+                throw std::out_of_range("Could not create dynamic mapping for Pluto Particle ID "+to_string(p->ID()));
+        }
 
         TLorentzVector lv = *p;
         lv *= 1000.0;   // convert to MeV

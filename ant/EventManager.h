@@ -21,6 +21,8 @@
 #include "AntPhysics.h"
 #include <stdexcept>
 
+class PStaticData;
+
 namespace ant {
 
 class data_check_exception : public std::exception {
@@ -62,6 +64,8 @@ protected:
     void CopyTaggerHits(ant::Event::TaggerHitList_t& container);
 
     void checkMCIDs();
+
+    PStaticData* pluto_database;
 
     ant::MCParticle& GetPlutoParticle(GTreePluto* tree, const UInt_t n);
 
