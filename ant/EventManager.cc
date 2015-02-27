@@ -166,31 +166,9 @@ void EventManager::CopyPlutoParticles(GTreePluto *tree, Event::MCParticleList_t 
 
     const ParticleTypeDatabase::Type* type=nullptr;
     for( auto& p : particles ) {
-        switch(p->ID()) {
-        case 1:
-            type = &ParticleTypeDatabase::Photon;
-            break;
-        case 14:
-            type = &ParticleTypeDatabase::Proton;
-            break;
-        case 2:
-            type = &ParticleTypeDatabase::ePlus;
-            break;
-        case 3:
-            type = &ParticleTypeDatabase::eMinus;
-            break;
-        case 7:
-            type = &ParticleTypeDatabase::Pi0;
-            break;
-        case 8:
-            type = &ParticleTypeDatabase::PiPlus;
-            break;
-        case 9:
-            type = &ParticleTypeDatabase::PiMinus;
-            break;
-        default:
+        type = ParticleTypeDatabase::GetTypeOfPlutoID(p->ID());
+        if(!type)
             continue;
-        }
 
         TLorentzVector lv = *p;
         lv *= 1000.0;   // convert to MeV
