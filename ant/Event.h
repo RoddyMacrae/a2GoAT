@@ -45,6 +45,7 @@ protected:
 
     MCParticleList_t    mctrue;
     refMCParticleList_t ref_mctrue;
+    refMCParticleList_t ref_mctruefinalstate;
 
     TaggerHitList_t     taggerhits;
     refTaggerHitList_t  ref_taggerhits;
@@ -58,6 +59,7 @@ public:
     const refTrackList_t&       Tracks()     const { return ref_tracks; }
     const refRecParticleList_t& Particles()  const { return ref_particles; }
     const refMCParticleList_t&  MCTrue()     const { return ref_mctrue; }
+    const refMCParticleList_t&  MCTrueFinalState() const { return ref_mctruefinalstate; }
     const refTaggerHitList_t&   TaggerHits() const { return ref_taggerhits; }
 
     const refRecParticleList_t ParticleType( const ParticleTypeDatabase::Type& type) const {

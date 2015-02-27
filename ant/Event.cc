@@ -21,6 +21,12 @@ void ant::Event::Finalize()
     for( auto& p : particles ) {
         particles_by_type[&p.Type()].push_back(&p);
     }
+
+    ref_mctruefinalstate.reserve(mctrue.size());
+    for( auto& p : mctrue ) {
+        if( p.IsFinalState() )
+            ref_mctruefinalstate.push_back(&p);
+    }
 }
 
 std::ostream &ant::Event::Print(std::ostream &stream) const

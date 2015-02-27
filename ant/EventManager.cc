@@ -69,7 +69,7 @@ void EventManager::ProcessEvent()
     CopyTaggerHits(event.TaggerHitStorage());
 
 #ifdef hasPluto
-    CopyPlutoParticles(GetPluto(), event.MCTrueStorage());
+    CopyPlutoParticles(GetPluto(), event);
 #endif
 
     event.Finalize();
@@ -164,9 +164,10 @@ void EventManager::CopyTracks(GTreeTrack *tree, Event::TrackList_t &container)
 }
 
 #ifdef hasPluto
-void EventManager::CopyPlutoParticles(GTreePluto *tree, Event::MCParticleList_t &container)
+void EventManager::CopyPlutoParticles(GTreePluto *tree, Event& event)
 {
     const GTreePluto::ParticleList particles = tree->GetAllParticles();
+    event.MCTrueStorage().reserve(particles.size());
 
     const ParticleTypeDatabase::Type* type=nullptr;
     for( auto& p : particles ) {
@@ -177,7 +178,7 @@ void EventManager::CopyPlutoParticles(GTreePluto *tree, Event::MCParticleList_t 
                         "Pluto_"+to_string(p->ID()),
                         "Pluto_"+ string( pluto_database->GetParticleName(p->ID()) ),
                         pluto_database->GetParticleMass(p->ID())*1000.0,
-                        abs(pluto_database->GetParticleCharge(p->ID()))
+                        pluto_database->GetParticleCharge(p->ID()) != 0
                         );
             if(!type)
                 throw std::out_of_range("Could not create dynamic mapping for Pluto Particle ID "+to_string(p->ID()));
@@ -186,10 +187,11 @@ void EventManager::CopyPlutoParticles(GTreePluto *tree, Event::MCParticleList_t 
         TLorentzVector lv = *p;
         lv *= 1000.0;   // convert to MeV
 
-        container.emplace_back( MCParticle(
-                    *type,
-                    lv)
-                    );
+        event.MCTrueStorage().emplace_back( MCParticle(
+                                                *type,
+                                                lv,
+                                                (p->GetDaughterIndex()==-1) )
+                                            );
     }
 }
 #endif

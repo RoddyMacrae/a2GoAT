@@ -60,7 +60,7 @@ protected:
 
     void CopyParticles(GTreeParticle* tree, const ant::ParticleTypeDatabase::Type& type, ant::Event& target);
     void CopyTracks(GTreeTrack* tree, Event::TrackList_t & container);
-    void CopyPlutoParticles(GTreePluto* tree, ant::Event::MCParticleList_t& container);
+    void CopyPlutoParticles(GTreePluto* tree, Event &event);
     void CopyTaggerHits(ant::Event::TaggerHitList_t& container);
 
     void checkMCIDs();
